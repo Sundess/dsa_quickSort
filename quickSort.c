@@ -2,14 +2,51 @@
 #include <stdlib.h>
 #include <time.h>
 
-void printArray(int arr[], size_t size)
+#include <Windows.h>
+// -------------- Get the wall time -------------- //
+double get_wall_time() {
+    LARGE_INTEGER time, frequency;
+    QueryPerformanceCounter(&time);
+    QueryPerformanceFrequency(&frequency);
+    return (double)time.QuadPart / frequency.QuadPart;
+}
+
+// -------------- Generate a non-duplicate array -------------- //
+void generateNonDuplicateArray(int arr[], int size)
 {
-    for (size_t i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
+    {
+        int randomNum = (rand() % size) + 1;
+        int duplicateEle = 0;
+        for (int j = 0; j < i; j++)
+        {
+            if (arr[j] == randomNum)
+            {
+                duplicateEle = 1;
+                break;
+            }
+        }
+        if (duplicateEle == 0)
+        {
+            arr[i] = randomNum;
+        }
+        else
+        {
+            i--;
+        }
+    }
+}
+
+// -------------- Print arrays in  the list -------------- //
+void printArray(int arr[], int size)
+{
+    for (int i = 0; i < size; i++)
     {
         printf("arr[%zu] = %d\n", i, arr[i]);
     }
 }
 
+// -------------- Partition the array -------------- //
 int partition(int array[], int low, int high)
 {
     int pivot = array[high];
@@ -36,6 +73,7 @@ int partition(int array[], int low, int high)
     return (i + 1);
 }
 
+// -------------- Quick sort -------------- //
 void quickSort(int array[], int low, int high)
 {
     if (low < high)
@@ -46,38 +84,40 @@ void quickSort(int array[], int low, int high)
     }
 }
 
+// -------------- Main -------------- //
 int main()
 {
     srand(time(NULL));
-    clock_t start, end;
+    double start_time, end_time, execution_time;
+    int n;
 
-    size_t n;
+    
     printf("Enter the input size of the problem: ");
-    scanf("%zu", &n);
+    scanf("%d", &n);   // Getting the input size of the problem
 
-    int data[n];
+   
+    int *array = (int *)malloc(sizeof(int) * n);  // Allocating memory for the array
+    
+    generateNonDuplicateArray(array, n); // Generate a non-duplicate array
 
-    for (size_t i = 0; i < n; i++)
-    {
-        data[i] = i + 1;
-    }
-
-    for (size_t i = 0; i < n; i++)
-    {
-        size_t j = rand() % n;
-        int temp = data[i];
-        data[i] = data[j];
-        data[j] = temp;
-    }
 
     printf("Unsorted Array:\n");
-    printArray(data, n);
+    printArray(array, n);     // Print the unsorted array
     printf("\n");
 
-    quickSort(data, 0, n - 1);
+
+    start_time = get_wall_time();    // Get the starting time.
+
+    quickSort(array, 0, n - 1);
+
+    end_time = get_wall_time();  // Get the ending time
+    execution_time = (end_time - start_time) * 1000.0;  // Calculate the execution time in milliseconds
+
+    printf("Execution Time: %.2f milliseconds\n", execution_time);
+
 
     printf("Sorted array in ascending order:\n");
-    printArray(data, n);
+    printArray(array, n);
 
     return 0;
 }

@@ -117,7 +117,7 @@ int main()
 
 
     printf("Sorted array in ascending order:\n");
-    printArray(array, n);
+    printArray(array, n);  // Print the sorted array
 
     return 0;
 }
